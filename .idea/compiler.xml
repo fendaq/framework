@@ -9,6 +9,7 @@
         <module name="demo1" />
         <module name="jpa" />
         <module name="main-test" />
+        <module name="spring-data-jpawapper" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -17,6 +18,7 @@
       <module name="framework" target="1.5" />
       <module name="jpa" target="1.5" />
       <module name="main-test" target="1.8" />
+      <module name="spring-data-jpawapper" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

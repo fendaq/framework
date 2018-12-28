@@ -17,14 +17,13 @@ public class Demo1ApplicationTests {
 
     @org.junit.Test
     public void asf() {
-//        com.example.demo1.User test = new com.example.demo1.User();
-//        test.setId("123");
-//        test.setName("测试");
+        com.example.demo1.User test = new com.example.demo1.User();
+        test.setId("123");
+        test.setName("测试");
+        userRepository.save(test);
         List listBySql = userRepository.getListBySql("select * from user where id = ?", new Object[]{"123"});
         System.out.println(listBySql);
     }
-
-
 
 }
 
