@@ -37,7 +37,7 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.liubingxu</groupId>
+            <groupId>com.github.liubingxu18</groupId>
             <artifactId>spring-data-jpawapper</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -45,36 +45,26 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.46</version>
-            <!--<scope>compile</scope>-->
-            <!--<optional>true</optional>-->
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
-            <!--<scope>compile</scope>-->
-            <!--<optional>true</optional>-->
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
             <version>1.1.10</version>
-            <!--<scope>compile</scope>-->
-            <!--<optional>true</optional>-->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
-            <!--<scope>compile</scope>-->
-            <!--<optional>true</optional>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
             <version>2.1.1.RELEASE</version>
-            <!--<scope>compile</scope>-->
-            <!--<optional>true</optional>-->
         </dependency>
     </dependencies>
     <build>
