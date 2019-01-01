@@ -15,12 +15,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @Author:LiuBingXu
- * @Description: jpa封装实现类
- * @Date: 2018/7/28.
- * @Modified by
- */
 public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
         implements BaseRepository<T, ID> {
 

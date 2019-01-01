@@ -10,12 +10,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * @Author:LiuBingXu
- * @Description: 自定义Repository接口
- * @Date: 2018/7/22.
- * @Modified by
- */
 @NoRepositoryBean
 public interface BaseRepository<T, ID extends Serializable> extends JpaRepository<T, ID>
         , JpaSpecificationExecutor<T> {

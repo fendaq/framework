@@ -11,30 +11,6 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 
-/**
- * eg， main函数引入@EnableJpaRepositories(repositoryFactoryBeanClass = BaseRepositoryFactoryBean.class)
- * eg, spring:
- *   jpa:
- *     show-sql: true
- *     database: mysql
- *     generate-ddl: true
- *     hibernate:
- *       ddl-auto: update
- *   datasource:
- *     url: jdbc:mysql://localhost:3306/toolkit?serverTimezone=GMT%2B8
- *     username: root
- *     password: admin
- *     type: com.alibaba.druid.pool.DruidDataSource
- *
- */
-
-
-/**
- * @Author:LiuBingXu
- * @Description: 创建自定义工厂
- * @Date: 2018/7/28.
- * @Modified by
- */
 public class BaseRepositoryFactoryBean<T extends JpaRepository<S, ID>, S, ID extends Serializable>
         extends JpaRepositoryFactoryBean<T, S, ID> {
 
