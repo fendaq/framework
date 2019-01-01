@@ -7,16 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95d262f1-5737-4f27-bb19-ec86a6af2594" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_interceptor_javax_interceptor_api_1_2.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main-test/main-test.iml" afterPath="$PROJECT_DIR$/main-test/main-test.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spring-data-jpawapper/pom.xml" afterPath="$PROJECT_DIR$/spring-data-jpawapper/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spring-data-jpawapper/spring-data-jpawapper.iml" afterPath="$PROJECT_DIR$/spring-data-jpawapper/spring-data-jpawapper.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spring-data-jpawapper/src/main/java/c/x/b/l/jpa/BaseRepositoryFactoryBean.java" afterPath="$PROJECT_DIR$/spring-data-jpawapper/src/main/java/c/x/b/l/jpa/BaseRepositoryFactoryBean.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spring-data-jpawapper/src/main/java/c/x/b/l/jpa/repository/BaseRepository.java" afterPath="$PROJECT_DIR$/spring-data-jpawapper/src/main/java/c/x/b/l/jpa/repository/BaseRepository.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spring-data-jpawapper/src/main/java/c/x/b/l/jpa/repository/BaseRepositoryImpl.java" afterPath="$PROJECT_DIR$/spring-data-jpawapper/src/main/java/c/x/b/l/jpa/repository/BaseRepositoryImpl.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -73,10 +65,10 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="511">
-                <caret line="31" column="22" lean-forward="true" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
+              <first_editor relative-caret-position="198">
+                <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
                 <folding>
-                  <marker date="1546311013882" expanded="true" signature="193:331" ph="..." />
+                  <marker date="1546311144254" expanded="true" signature="196:334" ph="..." />
                 </folding>
               </first_editor>
               <second_editor />
@@ -823,7 +815,7 @@
       <workItem from="1546085718429" duration="93000" />
       <workItem from="1546228292222" duration="7116000" />
       <workItem from="1546235763144" duration="29000" />
-      <workItem from="1546310998978" duration="16000" />
+      <workItem from="1546310998978" duration="145000" />
     </task>
     <task id="LOCAL-00001" summary="1">
       <created>1546002955308</created>
@@ -853,7 +845,14 @@
       <option name="project" value="LOCAL" />
       <updated>1546229711944</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="update readme">
+      <created>1546311055704</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1546311055704</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -889,7 +888,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27724000" />
+    <option name="totallyTimeSpent" value="27853000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -940,7 +939,8 @@
     <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="true" />
     <MESSAGE value="1" />
     <MESSAGE value="create readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="create readme" />
+    <MESSAGE value="update readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="update readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1212,16 +1212,17 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
           <caret line="10" column="17" lean-forward="false" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="511">
-            <caret line="31" column="22" lean-forward="true" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
+          <first_editor relative-caret-position="198">
+            <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
             <folding>
-              <marker date="1546311013882" expanded="true" signature="193:331" ph="..." />
+              <marker date="1546311144254" expanded="true" signature="196:334" ph="..." />
             </folding>
           </first_editor>
           <second_editor />

@@ -1,14 +1,14 @@
 # framework
-##spring-data-jpawapper是什么?
+## spring-data-jpawapper是什么?
 一个封装了jpa操作的工具集
 
-##有哪些功能？
+## 有哪些功能？
 
 * crud
     *  方便使用hibernate hql sql语句,支持参数传递
     *  导出为一个html格式的文件，样式一点也不会丢失
 
-##怎么使用？
+## 怎么使用？
 
 * spring boot 引入
 
@@ -22,7 +22,7 @@
 
 * application.yml 引入
 
-```yml
+```xml
 spring:
   jpa:
     show-sql: true
