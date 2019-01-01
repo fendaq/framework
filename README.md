@@ -15,9 +15,9 @@
 ```xml
     <dependency>
     	<groupId>com.github.liubingxu18</groupId>
-		<artifactId>spring-data-jpawapper</artifactId>
-		<version>1.0.0</version>
-	</dependency>
+	<artifactId>spring-data-jpawapper</artifactId>
+	<version>1.0.0</version>
+    </dependency>
 ```
 
 * application.yml 引入
