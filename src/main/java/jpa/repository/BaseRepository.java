@@ -1,4 +1,4 @@
-package c.x.b.l.jpa.repository;
+package jpa.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

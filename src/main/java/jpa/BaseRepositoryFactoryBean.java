@@ -1,6 +1,6 @@
-package c.x.b.l.jpa;
+package jpa;
 
-import c.x.b.l.jpa.repository.BaseRepositoryImpl;
+import jpa.repository.BaseRepositoryImpl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
