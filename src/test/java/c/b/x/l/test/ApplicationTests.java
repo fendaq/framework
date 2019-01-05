@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -22,12 +23,15 @@ public class ApplicationTests {
 
     @org.junit.Test
     public void save() {
-        User test = new User();
-        test.setId("123456");
-        test.setScore("1000");
-        userRepository.save(test);
-        List listBySql = userRepository.getListBySql("select * from dev_user where id = ?", new Object[]{"123"});
-        LOGGER.info(listBySql.toString());
+        List<String> lists = new ArrayList<>();
+        for (int i = 0; i < 100; i ++) {
+            User test = new User();
+            test.setId(String.valueOf(i));
+            test.setScore("1000");
+          //  userRepository.save(test);
+            lists.add(String.valueOf(i));
+        }
+        userRepository.batchDelete(lists);
     }
 
 }

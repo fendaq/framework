@@ -190,6 +190,15 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         return this.executeUpdateByHql(hql, Arrays.asList(params));
     }
 
+    @Override
+    @Transactional
+    @Modifying
+    public void batchDelete(List<ID> ids) {
+        ids.forEach(id -> {
+            this.deleteById(id);
+            LOGGER.info("delete ID " + id);
+        });
+    }
 
     @Override
     public boolean support(String modelType) {

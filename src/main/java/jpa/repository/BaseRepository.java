@@ -57,4 +57,6 @@ public interface BaseRepository<T, ID extends Serializable> extends JpaRepositor
     int executeUpdateByHql(String hql, List<Object> params);
 
     int executeUpdateByHql(String hql, Object[] params);
+
+    void batchDelete(List<ID> ids);
 }
