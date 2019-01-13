@@ -6,21 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="&lt;modules&gt;         &lt;module&gt;spring-data-jpawapper&lt;/module&gt;     &lt;/modules&gt;" />
         <module name="demo1" />
         <module name="framework (1) (com.example)" />
         <module name="jpa" />
-        <module name="main-test" />
         <module name="spring-data-jpawapper" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="demo" target="1.5" />
-      <module name="demo1" target="1.8" />
-      <module name="framework" target="1.5" />
-      <module name="framework (1) (com.example)" target="1.8" />
-      <module name="jpa" target="1.5" />
-      <module name="main-test" target="1.8" />
-      <module name="spring-data-jpawapper" target="1.5" />
+      <module name="spring-data-jpawapper" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

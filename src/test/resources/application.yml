@@ -12,5 +12,13 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
 
+code-create:
+  database-name: toolkit
+  domain-package: com.liubx.domain
+  service-package: com.liubx.web
+  service-impl-package: com.liubx.web.server.impl
+  repository-package: com.liubx.web.repository
+  controller-package: com.liubx.web.controller
+
 
 

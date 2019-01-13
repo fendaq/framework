@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/framework.iml" filepath="$PROJECT_DIR$/framework.iml" />
-      <module fileurl="file://$PROJECT_DIR$/main-test/main-test.iml" filepath="$PROJECT_DIR$/main-test/main-test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-data-jpawapper/spring-data-jpawapper.iml" filepath="$PROJECT_DIR$/spring-data-jpawapper/spring-data-jpawapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-data-jpawapper.iml" filepath="$PROJECT_DIR$/spring-data-jpawapper.iml" />
       <module fileurl="file://$PROJECT_DIR$/jpa/spring-data-jpawapper.iml" filepath="$PROJECT_DIR$/jpa/spring-data-jpawapper.iml" />
     </modules>
   </component>
