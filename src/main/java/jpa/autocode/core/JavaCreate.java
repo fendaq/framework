@@ -1,8 +1,9 @@
 package jpa.autocode.core;
 
+import com.alibaba.fastjson.JSONObject;
 import com.squareup.javapoet.*;
-import jpa.autocode.domain.CodeModel;
-import jpa.autocode.domain.Table;
+import jpa.autocode.bean.CodeModel;
+import jpa.autocode.bean.Table;
 import jpa.autocode.util.DateUtils;
 import jpa.autocode.util.StringUtil;
 import jpa.autocode.util.UUIDUtils;
@@ -10,7 +11,6 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -29,10 +29,7 @@ import javax.persistence.Id;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author:LiuBingXu
@@ -49,11 +46,11 @@ public class JavaCreate implements CreateCode {
     protected CodeModel codeModel = new CodeModel();
     protected String tableName;// 表名
     protected String version = "V 1.0";// 版本
-    protected String doMainPackage = "com.liubx.domain";// 实体类路径
-    protected String servicePackage = "com.liubx.web.server";// service路径
-    protected String serviceImplPackage = "com.liubx.web.server.impl";// service实现类路径
-    protected String repositoryPackage = "com.liubx.web.repository";// repository类路径
-    protected String controllerPackage = "com.liubx.web.controller";// controller类路径
+    protected String doMainPackage = "com.com.liubx.bean";// 实体类路径
+    protected String servicePackage = "com.com.liubx.web.server";// service路径
+    protected String serviceImplPackage = "com.com.liubx.web.server.impl";// service实现类路径
+    protected String repositoryPackage = "com.com.liubx.web.repository";// repository类路径
+    protected String controllerPackage = "com.com.liubx.web.controller";// controller类路径
     protected String basePath;// 绝对路径前缀
 
     public JavaCreate(EntityManager entityManager, String dataBaseName, String tableName, String doMainPackage,
@@ -130,7 +127,7 @@ public class JavaCreate implements CreateCode {
 
         Thread.sleep(1000);
         // 生成controller
-        this.createController();
+        // this.createController();
     }
 
     /**
@@ -156,6 +153,7 @@ public class JavaCreate implements CreateCode {
                     .addAnnotation(annotationSpecColumn)
                     .build();
             builder.addField(fieldSpec);
+            LOGGER.info("bean生成成功！");
         });
 
         AnnotationSpec annotationSpecTable = AnnotationSpec.builder(javax.persistence.Table.class)// 生成注解
@@ -199,6 +197,7 @@ public class JavaCreate implements CreateCode {
 
         JavaFile javaFile = JavaFile.builder(repositoryPackage, typeSpec).build();
         outFile(javaFile);
+        LOGGER.info("repository接口生成成功！");
     }
 
     /**
@@ -209,7 +208,7 @@ public class JavaCreate implements CreateCode {
     public boolean createServiceClass() {
         ClassName beanClass = ClassName.bestGuess(doMainPackage + "." + codeModel.getBeanName());
 
-        MethodSpec saveMethod = MethodSpec.methodBuilder("save")
+        MethodSpec saveMethod = MethodSpec.methodBuilder("saveOrUpdate")
                 .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)// 方法类型
                 .addParameter(beanClass, codeModel.getBeanName().toLowerCase())// 方法参数
                 .build();
@@ -226,16 +225,26 @@ public class JavaCreate implements CreateCode {
                 .returns(boolean.class)
                 .build();
 
+        MethodSpec pageListMethod = MethodSpec.methodBuilder("pageList")
+                .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                .addParameter(beanClass, codeModel.getBeanName().toLowerCase())
+                .addParameter(int.class, "page")
+                .addParameter(int.class, "pageSize")
+                .returns(JSONObject.class)
+                .build();
+
         TypeSpec typeSpec = TypeSpec.interfaceBuilder(codeModel.getServerName())
                 .addModifiers(Modifier.PUBLIC)
                 .addJavadoc("@Author:LiuBingXu\n@Date: " + DateUtils.formateDate("yyyy/MM/dd") + "\n")
                 .addMethod(saveMethod)
                 .addMethod(getMethod)
                 .addMethod(deleteMethod)
+                .addMethod(pageListMethod)
                 .build();
 
         JavaFile javaFile = JavaFile.builder(servicePackage, typeSpec).build();
         outFile(javaFile);
+        LOGGER.info("service接口生成成功！");
         return true;
     }
 
@@ -255,7 +264,7 @@ public class JavaCreate implements CreateCode {
         String repositoryName = StringUtil.firstLetterLowerCase(codeModel.getRepositoryName());
 
         // 保存方法
-        MethodSpec saveMethod = MethodSpec.methodBuilder("save")
+        MethodSpec saveMethod = MethodSpec.methodBuilder("saveOrUpdate")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(beanClass, StringUtil.firstLetterLowerCase(codeModel.getBeanName()))
@@ -280,12 +289,38 @@ public class JavaCreate implements CreateCode {
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(String.class, "ids")
-                .addCode("$T idArr = ids.split(\" \");\n" +
+                .addCode("$T idArr = ids.split(\",\");\n" +
                         "for (String id : idArr) {\n" +
-                        "    " + repositoryName + ".deleteById(id);\n" +
+                        "    " + repositoryName + ".batchDelete($T.asList(idArr));\n" +
                         "}\n" +
-                        "return true;\n", String[].class)
+                        "return true;\n", String[].class, Arrays.class)
                 .returns(TypeName.BOOLEAN)
+                .build();
+
+        // addWhere方法
+        MethodSpec addWhereMethod = MethodSpec.methodBuilder("addWhere")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(beanClass, codeModel.getBeanName().toLowerCase())
+                .addParameter(List.class, "pamrms")
+                .addCode("StringBuffer hql = new StringBuffer();\n" +
+                        "return hql.toString();\n", StringBuffer.class)
+                .returns(String.class)
+                .build();
+
+        // 分页查询
+        MethodSpec pageListMethod = MethodSpec.methodBuilder("pageList")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(beanClass, codeModel.getBeanName().toLowerCase())
+                .addParameter(int.class, "page")
+                .addParameter(int.class, "pageSize")
+                .addCode("$T result = new $T();\n" +
+                        "$T pamrms = new $T();\n" +
+                        "String appendHql = addWhere(menu, pamrms);\n" +
+                        "result.put(\"result\", menuRepository.listPageHql(\"from " + codeModel.getBeanName() + " where 1=1\" + appendHql, page, pageSize, pamrms));\n" +
+                        "result.put(\"count\", menuRepository.countHql(\"select count(*) from " + codeModel.getBeanName() + " where 1=1\" + appendHql, pamrms));\n" +
+                        "return result\n", JSONObject.class, JSONObject.class, List.class, ArrayList.class)
+                .returns(JSONObject.class)
                 .build();
 
         TypeSpec typeSpec = TypeSpec.classBuilder(codeModel.getServerImplName())
@@ -297,10 +332,13 @@ public class JavaCreate implements CreateCode {
                 .addMethod(saveMethod)
                 .addMethod(getMethod)
                 .addMethod(deleteMethod)
+                .addMethod(addWhereMethod)
+                .addMethod(pageListMethod)
                 .build();
 
         JavaFile javaFile = JavaFile.builder(serviceImplPackage, typeSpec).build();
         outFile(javaFile);
+        LOGGER.info("service实现类接口生成成功！");
     }
 
     /**

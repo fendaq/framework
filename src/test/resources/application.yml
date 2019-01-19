@@ -14,11 +14,12 @@ spring:
 
 code-create:
   database-name: toolkit
-  domain-package: com.liubx.domain
+  domain-package: com.liubx.bean
   service-package: com.liubx.web
   service-impl-package: com.liubx.web.server.impl
   repository-package: com.liubx.web.repository
   controller-package: com.liubx.web.controller
+  enable: true
 
 
 

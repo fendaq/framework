@@ -1,8 +1,6 @@
-package jpa.autocode.domain;
+package jpa.autocode.bean;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @Author:LiuBingXu

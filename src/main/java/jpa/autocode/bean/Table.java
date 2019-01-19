@@ -1,4 +1,4 @@
-package jpa.autocode.domain;
+package jpa.autocode.bean;
 
 import lombok.Data;
 

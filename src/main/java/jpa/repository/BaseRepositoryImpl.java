@@ -30,12 +30,12 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public List<T> listByHql(String hql) {
+    public List<T> listHql(String hql) {
         return entityManager.createQuery(hql).getResultList();
     }
 
     @Override
-    public List<T> listPageByHql(String hql, int page, int size) {
+    public List<T> listPageHql(String hql, int page, int size) {
         return entityManager.createQuery(hql)
                 .setFirstResult(page)
                 .setMaxResults(size)
@@ -43,7 +43,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public List<T> listPageByHql(String hql, int page, int size, List<Object> params) {
+    public List<T> listPageHql(String hql, int page, int size, List<Object> params) {
         Query query = entityManager.createQuery(hql);
         for (Object parm : params) {
             query.setParameter(params.indexOf(parm) + 1, parm);
@@ -55,12 +55,12 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public List<T> listPageByHql(String hql, int page, int size, Object[] params) {
-        return this.listPageByHql(hql, page, size, Arrays.asList(params));
+    public List<T> listPageHql(String hql, int page, int size, Object[] params) {
+        return this.listPageHql(hql, page, size, Arrays.asList(params));
     }
 
     @Override
-    public List<T> listPageBySql(String sql, int page, int size) {
+    public List<T> listPageSql(String sql, int page, int size) {
         return entityManager.createNativeQuery(sql)
                 .setFirstResult(page)
                 .setMaxResults(size)
@@ -68,7 +68,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public List<T> listPageBySql(String sql, int page, int size, List<Object> params) {
+    public List<T> listPageSql(String sql, int page, int size, List<Object> params) {
         Query query = entityManager.createNativeQuery(sql);
         for (Object parm : params) {
             query.setParameter(params.indexOf(parm) + 1, parm);
@@ -80,17 +80,17 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public List<T> listPageBySql(String sql, int page, int size, Object[] params) {
-        return this.listPageBySql(sql, page, size, Arrays.asList(params));
+    public List<T> listPageSql(String sql, int page, int size, Object[] params) {
+        return this.listPageSql(sql, page, size, Arrays.asList(params));
     }
 
     @Override
-    public T findBySql(String sql, Object[] obj) {
-        return this.findBySql(sql, Arrays.asList(obj));
+    public T findSql(String sql, Object[] obj) {
+        return this.findSql(sql, Arrays.asList(obj));
     }
 
     @Override
-    public T findBySql(String sql, List<Object> params) {
+    public T findSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
         for (Object parm : params) {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -100,7 +100,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public List<T> findListBySql(String sql, List<Object> params) {
+    public List<T> findListSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
         for (Object parm : params) {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -109,17 +109,17 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public List<T> findListBySql(String sql, Object[] params) {
-        return this.findListBySql(sql, Arrays.asList(params));
+    public List<T> findListSql(String sql, Object[] params) {
+        return this.findListSql(sql, Arrays.asList(params));
     }
 
     @Override
-    public List<Object[]> getListBySql(String sql, Object[] params) {
-        return this.getListBySql(sql, Arrays.asList(params));
+    public List<Object[]> getListSql(String sql, Object[] params) {
+        return this.getListSql(sql, Arrays.asList(params));
     }
 
     @Override
-    public List<Object[]> getListBySql(String sql, List<Object> params) {
+    public List<Object[]> getListSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
         for (Object parm : params) {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -141,14 +141,14 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Override
     @Transactional
     @Modifying
-    public int executeUpdateBySql(String sql) {
+    public int executeUpdateSql(String sql) {
         return entityManager.createNativeQuery(sql).executeUpdate();
     }
 
     @Override
     @Transactional
     @Modifying
-    public int executeUpdateBySql(String sql, List<Object> params) {
+    public int executeUpdateSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
         for (Object parm : params) {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -160,21 +160,21 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Override
     @Transactional
     @Modifying
-    public int executeUpdateBySql(String sql, Object[] params) {
-        return this.executeUpdateBySql(sql, Arrays.asList(params));
+    public int executeUpdateSql(String sql, Object[] params) {
+        return this.executeUpdateSql(sql, Arrays.asList(params));
     }
 
     @Override
     @Transactional
     @Modifying
-    public int executeUpdateByHql(String hql) {
+    public int executeUpdateHql(String hql) {
         return entityManager.createQuery(hql).executeUpdate();
     }
 
     @Override
     @Transactional
     @Modifying
-    public int executeUpdateByHql(String hql, List<Object> params) {
+    public int executeUpdateHql(String hql, List<Object> params) {
         Query query = entityManager.createQuery(hql);
         for (Object parm : params) {
             query.setParameter(params.indexOf(parm) + 1, parm);
@@ -186,8 +186,8 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Override
     @Transactional
     @Modifying
-    public int executeUpdateByHql(String hql, Object[] params) {
-        return this.executeUpdateByHql(hql, Arrays.asList(params));
+    public int executeUpdateHql(String hql, Object[] params) {
+        return this.executeUpdateHql(hql, Arrays.asList(params));
     }
 
     @Override
@@ -198,6 +198,36 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
             this.deleteById(id);
             LOGGER.info("delete ID " + id);
         });
+    }
+
+    @Override
+    public int countHql(String hql) {
+        return this.countHql(hql, null);
+    }
+
+    @Override
+    public int countHql(String hql, List<Object> params) {
+        Query query = entityManager.createQuery(hql);
+        for (Object parm : params) {
+            query.setParameter(params.indexOf(parm) + 1, parm);
+            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+        }
+        return query.getResultList().size();
+    }
+
+    @Override
+    public int countSql(String sql) {
+        return this.countHql(sql, null);
+    }
+
+    @Override
+    public int countSql(String sql, List<Object> params) {
+        Query query = entityManager.createNativeQuery(sql);
+        for (Object parm : params) {
+            query.setParameter(params.indexOf(parm) + 1, parm);
+            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+        }
+        return query.getResultList().size();
     }
 
     @Override
