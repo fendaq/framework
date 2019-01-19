@@ -35,6 +35,15 @@ spring:
     password: pwd
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
+code-create:  
+  database-name: toolkit  
+  domain-package: com.liubx.bean  
+  service-package: com.liubx.web  
+  service-impl-package: com.liubx.web.server.impl  
+  repository-package: com.liubx.web.repository  
+  controller-package: com.liubx.web.controller  
+  #是否启用代码生成
+  enable: true
 ```
 * 主函数引入注解
 
