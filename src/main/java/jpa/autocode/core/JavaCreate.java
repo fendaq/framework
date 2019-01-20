@@ -31,18 +31,12 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.*;
 
-/**
- * @Author:LiuBingXu
- * @Description:代码配置工具
- * @Date: 2018/8/9.
- * @Modified by
- */
 @Data
 public class JavaCreate implements CreateCode {
     private final static Logger LOGGER = LoggerFactory.getLogger(JavaCreate.class);
 
     private EntityManager entityManager;
-    protected String dataBaseName;// 数据库名
+    protected String dataBaseName;
     protected CodeModel codeModel = new CodeModel();
     protected String tableName;// 表名
     protected String version = "V 1.0";// 版本
@@ -197,7 +191,7 @@ public class JavaCreate implements CreateCode {
 
         JavaFile javaFile = JavaFile.builder(repositoryPackage, typeSpec).build();
         outFile(javaFile);
-        LOGGER.info("repository接口生成成功！");
+        LOGGER.info("repository create success！");
     }
 
     /**
@@ -244,13 +238,10 @@ public class JavaCreate implements CreateCode {
 
         JavaFile javaFile = JavaFile.builder(servicePackage, typeSpec).build();
         outFile(javaFile);
-        LOGGER.info("service接口生成成功！");
+        LOGGER.info("service create success！");
         return true;
     }
 
-    /**
-     * 生成接口实现类
-     */
     private void createServiceClassImpl() {
         ClassName className = ClassName.bestGuess(servicePackage + "." + codeModel.getServerName());
         ClassName repositoryClass = ClassName.bestGuess(repositoryPackage + "." + codeModel.getRepositoryName());
@@ -263,7 +254,6 @@ public class JavaCreate implements CreateCode {
         String beanParm = StringUtil.firstLetterLowerCase(codeModel.getBeanName());
         String repositoryName = StringUtil.firstLetterLowerCase(codeModel.getRepositoryName());
 
-        // 保存方法
         MethodSpec saveMethod = MethodSpec.methodBuilder("saveOrUpdate")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
@@ -275,7 +265,6 @@ public class JavaCreate implements CreateCode {
                 .returns(TypeName.VOID)
                 .build();
 
-        // 根据id查询
         MethodSpec getMethod = MethodSpec.methodBuilder("get" + codeModel.getBeanName() + "ById")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
@@ -284,7 +273,6 @@ public class JavaCreate implements CreateCode {
                 .returns(beanClass)
                 .build();
 
-        // 根据ids删除
         MethodSpec deleteMethod = MethodSpec.methodBuilder("delete" + codeModel.getBeanName() + "ByIds")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
@@ -297,7 +285,6 @@ public class JavaCreate implements CreateCode {
                 .returns(TypeName.BOOLEAN)
                 .build();
 
-        // addWhere方法
         MethodSpec addWhereMethod = MethodSpec.methodBuilder("addWhere")
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(beanClass, codeModel.getBeanName().toLowerCase())
@@ -307,7 +294,6 @@ public class JavaCreate implements CreateCode {
                 .returns(String.class)
                 .build();
 
-        // 分页查询
         MethodSpec pageListMethod = MethodSpec.methodBuilder("pageList")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
@@ -338,12 +324,9 @@ public class JavaCreate implements CreateCode {
 
         JavaFile javaFile = JavaFile.builder(serviceImplPackage, typeSpec).build();
         outFile(javaFile);
-        LOGGER.info("service实现类接口生成成功！");
+        LOGGER.info("serviceImpl create success！");
     }
 
-    /**
-     * 生成controller
-     */
     private void createController() {
         ClassName serverClassName = ClassName.bestGuess(servicePackage + "." + codeModel.getServerName());
         ClassName domainClassName = ClassName.bestGuess(doMainPackage + "." + codeModel.getBeanName());
@@ -352,7 +335,6 @@ public class JavaCreate implements CreateCode {
         String serverName = StringUtil.firstLetterLowerCase(codeModel.getServerName());
         String domainName = StringUtil.firstLetterLowerCase(codeModel.getBeanName());
 
-        // 注解包含URL
         AnnotationSpec saveAnnotation = AnnotationSpec
                 .builder(RequestMapping.class)
                 .addMember("name", "$S", "/" + domainName + "/add")
@@ -373,17 +355,14 @@ public class JavaCreate implements CreateCode {
                 .addMember("name", "$S", "/" + domainName + "/edit/{id}")
                 .build();
 
-        // 成员变量
         FieldSpec fieldSpec = FieldSpec.builder(serverClassName, serverName, Modifier.PUBLIC)
                 .addAnnotation(Autowired.class)
                 .build();
 
-        // 详情参数
         ParameterSpec infoParm = ParameterSpec.builder(String.class, "id")
                 .addAnnotation(PathVariable.class)
                 .build();
 
-        // 保存controller
         MethodSpec saveMethod = MethodSpec.methodBuilder("add")
                 .addAnnotation(saveAnnotation)
                 .addAnnotation(ResponseBody.class)
@@ -396,7 +375,6 @@ public class JavaCreate implements CreateCode {
                 .returns(saveReturnClass)
                 .build();
 
-        // 删除controller
         MethodSpec deleteMethod = MethodSpec.methodBuilder("delByids")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(deleteAnnotation)
@@ -408,7 +386,6 @@ public class JavaCreate implements CreateCode {
                 .returns(saveReturnClass)
                 .build();
 
-        // 详情
         MethodSpec infoMethod = MethodSpec.methodBuilder("info")
                 .addAnnotation(infoAnnotation)
                 .addModifiers(Modifier.PUBLIC)
@@ -419,7 +396,6 @@ public class JavaCreate implements CreateCode {
                 .returns(String.class)
                 .build();
 
-        // 编辑
         MethodSpec editMethod = MethodSpec.methodBuilder("edit")
                 .addAnnotation(editAnnotation)
                 .addModifiers(Modifier.PUBLIC)
@@ -446,8 +422,6 @@ public class JavaCreate implements CreateCode {
     }
 
     /**
-     * 输出文件
-     *
      * @param javaFile
      */
     private void outFile(JavaFile javaFile) {
@@ -461,8 +435,6 @@ public class JavaCreate implements CreateCode {
     }
 
     /**
-     * 查询数据库字段和注释
-     *
      * @return
      */
     private String getSql() {
@@ -470,7 +442,6 @@ public class JavaCreate implements CreateCode {
                 " where table_name='" + tableName + "' and table_schema= '" + dataBaseName + "'";
     }
 
-    // 初始化路径
     private void initBasePath() {
         this.basePath = this.getClass().getClassLoader().getResource("").getPath();
         basePath = URLDecoder.decode(basePath);

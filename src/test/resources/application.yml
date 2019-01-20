@@ -14,7 +14,7 @@ spring:
 
 code-create:
   database-name: toolkit
-  domain-package: com.liubx.bean
+  bean-package: com.liubx.bean
   service-package: com.liubx.web
   service-impl-package: com.liubx.web.server.impl
   repository-package: com.liubx.web.repository

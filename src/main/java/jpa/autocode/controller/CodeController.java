@@ -12,13 +12,6 @@ import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Author:LiuBingXu
- * @Description: 代码生成操作
- * @Date: 2019/1/13.
- * @Modified by
- */
-
 @Controller
 @RequestMapping(value = "/code")
 public class CodeController {

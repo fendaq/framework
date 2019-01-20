@@ -2,12 +2,6 @@ package jpa.autocode.bean;
 
 import lombok.Data;
 
-/**
- * @Author:LiuBingXu
- * @Description:代码自动生成相关名称
- * @Date: 2018/8/18.
- * @Modified by
- */
 @Data
 public class CodeModel {
 

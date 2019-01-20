@@ -37,7 +37,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 code-create:  
   database-name: toolkit  
-  domain-package: com.liubx.bean  
+  bean-package: com.liubx.bean  
   service-package: com.liubx.web  
   service-impl-package: com.liubx.web.server.impl  
   repository-package: com.liubx.web.repository  
