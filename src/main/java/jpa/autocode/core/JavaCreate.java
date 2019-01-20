@@ -278,9 +278,7 @@ public class JavaCreate implements CreateCode {
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(String.class, "ids")
                 .addCode("$T idArr = ids.split(\",\");\n" +
-                        "for (String id : idArr) {\n" +
                         "    " + repositoryName + ".batchDelete($T.asList(idArr));\n" +
-                        "}\n" +
                         "return true;\n", String[].class, Arrays.class)
                 .returns(TypeName.BOOLEAN)
                 .build();
@@ -302,10 +300,10 @@ public class JavaCreate implements CreateCode {
                 .addParameter(int.class, "pageSize")
                 .addCode("$T result = new $T();\n" +
                         "$T pamrms = new $T();\n" +
-                        "String appendHql = addWhere(menu, pamrms);\n" +
-                        "result.put(\"result\", menuRepository.listPageHql(\"from " + codeModel.getBeanName() + " where 1=1\" + appendHql, page, pageSize, pamrms));\n" +
-                        "result.put(\"count\", menuRepository.countHql(\"select count(*) from " + codeModel.getBeanName() + " where 1=1\" + appendHql, pamrms));\n" +
-                        "return result\n", JSONObject.class, JSONObject.class, List.class, ArrayList.class)
+                        "String appendHql = addWhere(" + codeModel.getBeanName().toLowerCase() + ", pamrms);\n" +
+                        "result.put(\"result\",  " + repositoryName + ".listPageHql(\"from " + codeModel.getBeanName() + " where 1=1\" + appendHql, page, pageSize, pamrms));\n" +
+                        "result.put(\"count\",  " + repositoryName + ".countHql(\"select count(*) from " + codeModel.getBeanName() + " where 1=1\" + appendHql, pamrms));\n" +
+                        "return result;\n", JSONObject.class, JSONObject.class, List.class, ArrayList.class)
                 .returns(JSONObject.class)
                 .build();
 
