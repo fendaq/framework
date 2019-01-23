@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -70,10 +71,10 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Override
     public List<T> listPageSql(String sql, int page, int size, List<Object> params) {
         Query query = entityManager.createNativeQuery(sql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
             LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
-        }
+        });
         return query.setFirstResult(page)
                 .setMaxResults(size)
                 .getResultList();
@@ -92,19 +93,20 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Override
     public T findSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
             LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
-        }
+        });
         return (T) nativeQuery.getSingleResult();
     }
 
     @Override
     public List<T> findListSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-        }
+            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+        });
         return nativeQuery.getResultList();
     }
 
@@ -121,10 +123,10 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Override
     public List<Object[]> getListSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
             LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
-        }
+        });
         return nativeQuery.getResultList();
     }
 
@@ -150,10 +152,10 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Modifying
     public int executeUpdateSql(String sql, List<Object> params) {
         Query nativeQuery = entityManager.createNativeQuery(sql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
             LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
-        }
+        });
         return nativeQuery.executeUpdate();
     }
 
@@ -176,10 +178,10 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Modifying
     public int executeUpdateHql(String hql, List<Object> params) {
         Query query = entityManager.createQuery(hql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
             LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
-        }
+        });
         return query.executeUpdate();
     }
 
@@ -201,33 +203,43 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public int countHql(String hql) {
-        return this.countHql(hql, null);
+    public Long countHql(String hql) {
+        return this.countHql(hql, new ArrayList<>());
     }
 
     @Override
-    public int countHql(String hql, List<Object> params) {
+    public Long countHql(String hql, List<Object> params) {
         Query query = entityManager.createQuery(hql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
             LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
-        }
-        return query.getResultList().size();
+        });
+        return Long.parseLong(query.getSingleResult().toString());
     }
 
     @Override
-    public int countSql(String sql) {
-        return this.countHql(sql, null);
+    public Long countHql(String hql, Object[] params) {
+        return this.countHql(hql, Arrays.asList(params));
     }
 
     @Override
-    public int countSql(String sql, List<Object> params) {
+    public Long countSql(String sql) {
+        return this.countHql(sql, new ArrayList<>());
+    }
+
+    @Override
+    public Long countSql(String sql, List<Object> params) {
         Query query = entityManager.createNativeQuery(sql);
-        for (Object parm : params) {
+        params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
             LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
-        }
-        return query.getResultList().size();
+        });
+        return Long.parseLong(query.getSingleResult().toString());
+    }
+
+    @Override
+    public Long countSql(String sql, Object[] params) {
+        return this.countSql(sql, Arrays.asList(params));
     }
 
     @Override

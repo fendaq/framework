@@ -60,11 +60,15 @@ public interface BaseRepository<T, ID extends Serializable> extends JpaRepositor
 
     void batchDelete(List<ID> ids);
 
-    int countHql(String hql);
+    Long countHql(String hql);
 
-    int countHql(String hql, List<Object> params);
+    Long countHql(String hql, List<Object> params);
 
-    int countSql(String sql);
+    Long countHql(String hql, Object[] params);
 
-    int countSql(String sql, List<Object> params);
+    Long countSql(String sql);
+
+    Long countSql(String sql, List<Object> params);
+
+    Long countSql(String sql,  Object[] params);
 }

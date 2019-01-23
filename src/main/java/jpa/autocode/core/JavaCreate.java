@@ -11,7 +11,7 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -19,8 +19,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.lang.model.element.Modifier;
 import javax.persistence.Column;
@@ -121,7 +120,7 @@ public class JavaCreate implements CreateCode {
 
         Thread.sleep(1000);
         // 生成controller
-        // this.createController();
+        this.createController();
     }
 
     /**
@@ -205,6 +204,7 @@ public class JavaCreate implements CreateCode {
         MethodSpec saveMethod = MethodSpec.methodBuilder("saveOrUpdate")
                 .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)// 方法类型
                 .addParameter(beanClass, codeModel.getBeanName().toLowerCase())// 方法参数
+                .returns(beanClass)
                 .build();
 
         MethodSpec getMethod = MethodSpec.methodBuilder("get" + codeModel.getBeanName() + "ById")
@@ -261,15 +261,15 @@ public class JavaCreate implements CreateCode {
                 .addCode("if ($T.isEmpty(" + beanParm + ".getId())) {\n" +
                         "  " + beanParm + ".setId($T.getUUID());\n" +
                         "}\n", StringUtils.class, UUIDUtils.class)
-                .addStatement("$N.save($N)", repositoryName, beanParm)
-                .returns(TypeName.VOID)
+                .addStatement("return $N.save($N)\n", repositoryName, beanParm)
+                .returns(beanClass)
                 .build();
 
         MethodSpec getMethod = MethodSpec.methodBuilder("get" + codeModel.getBeanName() + "ById")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(String.class, "id")
-                .addStatement("return  (\"1\").equals(id ) ? null : " + repositoryName + ".findById(id ).get()")
+                .addStatement("return " + repositoryName + ".findById(id ).get()")
                 .returns(beanClass)
                 .build();
 
@@ -328,13 +328,13 @@ public class JavaCreate implements CreateCode {
     private void createController() {
         ClassName serverClassName = ClassName.bestGuess(servicePackage + "." + codeModel.getServerName());
         ClassName domainClassName = ClassName.bestGuess(doMainPackage + "." + codeModel.getBeanName());
-        Class saveReturnClass = Map.class;
+        Class saveReturnClass = ResponseEntity.class;
 
         String serverName = StringUtil.firstLetterLowerCase(codeModel.getServerName());
         String domainName = StringUtil.firstLetterLowerCase(codeModel.getBeanName());
 
         AnnotationSpec saveAnnotation = AnnotationSpec
-                .builder(RequestMapping.class)
+                .builder(PostMapping.class)
                 .addMember("name", "$S", "/" + domainName + "/add")
                 .build();
 
@@ -344,12 +344,12 @@ public class JavaCreate implements CreateCode {
                 .build();
 
         AnnotationSpec infoAnnotation = AnnotationSpec
-                .builder(RequestMapping.class)
+                .builder(PostMapping.class)
                 .addMember("name", "$S", "/" + domainName + "/info/{id}")
                 .build();
 
         AnnotationSpec editAnnotation = AnnotationSpec
-                .builder(RequestMapping.class)
+                .builder(PostMapping.class)
                 .addMember("name", "$S", "/" + domainName + "/edit/{id}")
                 .build();
 
@@ -363,24 +363,17 @@ public class JavaCreate implements CreateCode {
 
         MethodSpec saveMethod = MethodSpec.methodBuilder("add")
                 .addAnnotation(saveAnnotation)
-                .addAnnotation(ResponseBody.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(domainClassName, domainName)
-                .addCode(" $T m = new $T();\n" +
-                        "" + serverName + ".save(" + domainName + ");\n" +
-                        " m.put(\"success\", true);\n" +
-                        " return m;\n", Map.class, HashMap.class)
+                .addCode("return ResponseEntity.ok(authServer.saveOrUpdate(auth));\n")
                 .returns(saveReturnClass)
                 .build();
 
         MethodSpec deleteMethod = MethodSpec.methodBuilder("delByids")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(deleteAnnotation)
-                .addAnnotation(ResponseBody.class)
                 .addParameter(String.class, "ids")
-                .addCode("  $T m = new $T();\n" +
-                        "   m.put(\"success\", " + serverName + ".delete" + codeModel.getBeanName() + "ByIds(ids));\n" +
-                        "   return m;\n", Map.class, HashMap.class)
+                .addCode("return ResponseEntity.ok(authServer.deleteAuthByIds(ids));\n")
                 .returns(saveReturnClass)
                 .build();
 
@@ -388,26 +381,22 @@ public class JavaCreate implements CreateCode {
                 .addAnnotation(infoAnnotation)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(infoParm)
-                .addParameter(Model.class, "model")
-                .addCode("model.addAttribute(\"info\", " + serverName + ".get" + codeModel.getBeanName() + "ById(id));\n" +
-                        " return \"user/info.html\";\n")
-                .returns(String.class)
+                .addCode("return ResponseEntity.ok(authServer.getAuthById(id));\n")
+                .returns(saveReturnClass)
                 .build();
 
         MethodSpec editMethod = MethodSpec.methodBuilder("edit")
                 .addAnnotation(editAnnotation)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(infoParm)
-                .addParameter(Model.class, "model")
-                .addCode(" model.addAttribute(\"info\", " + serverName + ".get" + codeModel.getBeanName() + "ById(id));\n" +
-                        "  return \"user/edit.html\";")
-                .returns(String.class)
+                .addCode("  return  ResponseEntity.ok(authServer.getAuthById(id));\n")
+                .returns(saveReturnClass)
                 .build();
 
         TypeSpec className = TypeSpec.classBuilder(codeModel.getControllerName())
                 .addModifiers(Modifier.PUBLIC)
                 .addJavadoc("@Author:LiuBingXu\n@Date: " + DateUtils.formateDate("yyyy/MM/dd") + "\n")
-                .addAnnotation(Controller.class)
+                .addAnnotation(RestController.class)
                 .addField(fieldSpec)
                 .addMethod(saveMethod)
                 .addMethod(deleteMethod)

@@ -33,7 +33,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.liubingxu18</groupId>
     <artifactId>spring-data-jpawapper</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
