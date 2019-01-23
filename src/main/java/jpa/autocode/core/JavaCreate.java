@@ -260,8 +260,7 @@ public class JavaCreate implements CreateCode {
                 .addParameter(beanClass, StringUtil.firstLetterLowerCase(codeModel.getBeanName()))
                 .addCode("if ($T.isEmpty(" + beanParm + ".getId())) {\n" +
                         "  " + beanParm + ".setId($T.getUUID());\n" +
-                        "}\n", StringUtils.class, UUIDUtils.class)
-                .addStatement("return $N.save($N)\n", repositoryName, beanParm)
+                        "}\nreturn $N.save($N);\n", StringUtils.class, UUIDUtils.class, repositoryName, beanParm)
                 .returns(beanClass)
                 .build();
 
@@ -335,22 +334,17 @@ public class JavaCreate implements CreateCode {
 
         AnnotationSpec saveAnnotation = AnnotationSpec
                 .builder(PostMapping.class)
-                .addMember("name", "$S", "/" + domainName + "/add")
+                .addMember("value", "$S", "/" + domainName + "/add")
                 .build();
 
         AnnotationSpec deleteAnnotation = AnnotationSpec
                 .builder(PostMapping.class)
-                .addMember("name", "$S", "/" + domainName + "/delByids")
+                .addMember("value", "$S", "/" + domainName + "/delByids")
                 .build();
 
         AnnotationSpec infoAnnotation = AnnotationSpec
                 .builder(PostMapping.class)
-                .addMember("name", "$S", "/" + domainName + "/info/{id}")
-                .build();
-
-        AnnotationSpec editAnnotation = AnnotationSpec
-                .builder(PostMapping.class)
-                .addMember("name", "$S", "/" + domainName + "/edit/{id}")
+                .addMember("value", "$S", "/" + domainName + "/info/{id}")
                 .build();
 
         FieldSpec fieldSpec = FieldSpec.builder(serverClassName, serverName, Modifier.PUBLIC)
@@ -365,7 +359,7 @@ public class JavaCreate implements CreateCode {
                 .addAnnotation(saveAnnotation)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(domainClassName, domainName)
-                .addCode("return ResponseEntity.ok(authServer.saveOrUpdate(auth));\n")
+                .addCode("return ResponseEntity.ok(" + serverName + ".saveOrUpdate(" + domainName + "));\n")
                 .returns(saveReturnClass)
                 .build();
 
@@ -373,7 +367,7 @@ public class JavaCreate implements CreateCode {
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(deleteAnnotation)
                 .addParameter(String.class, "ids")
-                .addCode("return ResponseEntity.ok(authServer.deleteAuthByIds(ids));\n")
+                .addCode("return ResponseEntity.ok(" + serverName + ".delete" + codeModel.getBeanName() + "ByIds(ids));\n")
                 .returns(saveReturnClass)
                 .build();
 
@@ -381,15 +375,7 @@ public class JavaCreate implements CreateCode {
                 .addAnnotation(infoAnnotation)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(infoParm)
-                .addCode("return ResponseEntity.ok(authServer.getAuthById(id));\n")
-                .returns(saveReturnClass)
-                .build();
-
-        MethodSpec editMethod = MethodSpec.methodBuilder("edit")
-                .addAnnotation(editAnnotation)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(infoParm)
-                .addCode("  return  ResponseEntity.ok(authServer.getAuthById(id));\n")
+                .addCode("return ResponseEntity.ok(" + serverName + ".get" + codeModel.getBeanName() + "ById(id));\n")
                 .returns(saveReturnClass)
                 .build();
 
@@ -401,7 +387,6 @@ public class JavaCreate implements CreateCode {
                 .addMethod(saveMethod)
                 .addMethod(deleteMethod)
                 .addMethod(infoMethod)
-                .addMethod(editMethod)
                 .build();
 
         JavaFile javaFile = JavaFile.builder(controllerPackage, className).build();
