@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -38,12 +39,12 @@ public class JavaCreate implements CreateCode {
     protected String dataBaseName;
     protected CodeModel codeModel = new CodeModel();
     protected String tableName;// 表名
-    protected String version = "V 1.0";// 版本
-    protected String doMainPackage = "com.com.liubx.bean";// 实体类路径
-    protected String servicePackage = "com.com.liubx.web.server";// service路径
-    protected String serviceImplPackage = "com.com.liubx.web.server.impl";// service实现类路径
-    protected String repositoryPackage = "com.com.liubx.web.repository";// repository类路径
-    protected String controllerPackage = "com.com.liubx.web.controller";// controller类路径
+    protected String version = "V 1.0.5";// 版本
+    protected String doMainPackage = "com.liubx.bean";// 实体类路径
+    protected String servicePackage = "com.liubx.web.server";// service路径
+    protected String serviceImplPackage = "com.liubx.web.server.impl";// service实现类路径
+    protected String repositoryPackage = "com.liubx.web.repository";// repository类路径
+    protected String controllerPackage = "com.liubx.web.controller";// controller类路径
     protected String basePath;// 绝对路径前缀
 
     public JavaCreate(EntityManager entityManager, String dataBaseName, String tableName, String doMainPackage,
@@ -84,9 +85,11 @@ public class JavaCreate implements CreateCode {
             Table table = new Table();
             table.setName(StringUtil.objToStr(t[0]));
             table.setComment(StringUtil.objToStr(t[1]));
+            table.setDataType(StringUtil.objToStr(t[2]));
+            table.setIsPri(StringUtil.objToStr(t[3]));
             tableList.add(table);
         });
-
+        System.out.println(tableList);
         // 准备相关名
         codeModel.setBeanName(StringUtil.firstLetterUppercase(tableName.split("_")[1]));
         codeModel.setRepositoryName(codeModel.getBeanName() + "Repository");
@@ -410,13 +413,17 @@ public class JavaCreate implements CreateCode {
      * @return
      */
     private String getSql() {
-        return "select COLUMN_NAME as name,column_comment as comment from INFORMATION_SCHEMA.Columns\n" +
+        return "select COLUMN_NAME as name,column_comment as comment, data_type as dataType, if(column_key='PRI','true','false') from INFORMATION_SCHEMA.Columns\n" +
                 " where table_name='" + tableName + "' and table_schema= '" + dataBaseName + "'";
     }
 
     private void initBasePath() {
         this.basePath = this.getClass().getClassLoader().getResource("").getPath();
-        basePath = URLDecoder.decode(basePath);
+        try {
+            basePath = URLDecoder.decode(basePath, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         basePath = basePath.substring(1, basePath.indexOf("/target"));
     }
 }

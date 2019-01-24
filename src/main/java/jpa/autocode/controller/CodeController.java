@@ -5,15 +5,14 @@ import jpa.autocode.core.JavaCreate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.Map;
 
-@Controller
-@RequestMapping(value = "/code")
+@RestController
 public class CodeController {
 
     @Autowired
@@ -33,8 +32,7 @@ public class CodeController {
     @Value("${code-create.enable}")
     private String enable;
 
-    @GetMapping(value = "/create")
-    @ResponseBody
+    @GetMapping(value = "/code/create")
     public Map createCode(String table) {
         Map m = new HashMap();
         CreateCode createCode = new JavaCreate(entityManager, dataBaseName, table
