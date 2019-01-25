@@ -1,6 +1,5 @@
 package jpa.autocode.core;
 
-import com.alibaba.fastjson.JSONObject;
 import com.squareup.javapoet.*;
 import jpa.autocode.bean.CodeModel;
 import jpa.autocode.bean.Table;
@@ -11,10 +10,14 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +28,10 @@ import javax.lang.model.element.Modifier;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
+import javax.persistence.criteria.Predicate;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
@@ -134,17 +139,40 @@ public class JavaCreate implements CreateCode {
      * @return
      */
     public boolean createDomainClass(String tableName, List<Table> tableList) {
-        TypeSpec.Builder builder = TypeSpec.classBuilder(codeModel.getBeanName());
+        /** 读取mysql转Java类型配置 **/
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("mysqlToJava.properties");
+        ResourceBundle resourceBundle = null;
+        try {
+            resourceBundle = new PropertyResourceBundle(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        TypeSpec.Builder builder = TypeSpec.classBuilder(codeModel.getBeanName());
+        ResourceBundle finalResourceBundle = resourceBundle;
         tableList.forEach(t -> {
-            AnnotationSpec annotationSpecColumn = AnnotationSpec.builder(Column.class)// 属性上面的注解
+            /** 属性上面的注解 **/
+            AnnotationSpec annotationSpecColumn = AnnotationSpec.builder(Column.class)
                     .addMember("name", "$S", t.getName())
                     .build();
-            if ("id".equals(t.getName())) {
+            /** 主键 **/
+            if (t.getIsPri().equals("true")) {
                 annotationSpecColumn = AnnotationSpec.builder(Id.class).build();
             }
 
-            FieldSpec fieldSpec = FieldSpec.builder(String.class, t.getName(), Modifier.PRIVATE)// 添加属性
+            Class clazz = String.class;
+            if (finalResourceBundle != null) {
+                try {
+                    clazz = Class.forName(finalResourceBundle.getString(t.getDataType()));
+                    if (clazz == Date.class) {
+                        // 处理日期格式化
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            /** 添加属性 **/
+            FieldSpec fieldSpec = FieldSpec.builder(clazz, t.getName(), Modifier.PRIVATE)
                     .addJavadoc(t.getComment())
                     .addAnnotation(annotationSpecColumn)
                     .build();
@@ -152,7 +180,8 @@ public class JavaCreate implements CreateCode {
             LOGGER.info("bean生成成功！");
         });
 
-        AnnotationSpec annotationSpecTable = AnnotationSpec.builder(javax.persistence.Table.class)// 生成注解
+        /** 生成注解 **/
+        AnnotationSpec annotationSpecTable = AnnotationSpec.builder(javax.persistence.Table.class)
                 .addMember("name", "$S", tableName)
                 .build();
         AnnotationSpec annotationSpecEntity = AnnotationSpec.builder(javax.persistence.Entity.class).build();
@@ -227,7 +256,7 @@ public class JavaCreate implements CreateCode {
                 .addParameter(beanClass, codeModel.getBeanName().toLowerCase())
                 .addParameter(int.class, "page")
                 .addParameter(int.class, "pageSize")
-                .returns(JSONObject.class)
+                .returns(Page.class)
                 .build();
 
         TypeSpec typeSpec = TypeSpec.interfaceBuilder(codeModel.getServerName())
@@ -261,9 +290,9 @@ public class JavaCreate implements CreateCode {
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(beanClass, StringUtil.firstLetterLowerCase(codeModel.getBeanName()))
-                .addCode("if ($T.isEmpty(" + beanParm + ".getId())) {\n" +
+                .addCode("  if ($T.isEmpty(" + beanParm + ".getId())) {\n" +
                         "  " + beanParm + ".setId($T.getUUID());\n" +
-                        "}\nreturn $N.save($N);\n", StringUtils.class, UUIDUtils.class, repositoryName, beanParm)
+                        "  }\nreturn $N.save($N);\n", StringUtils.class, UUIDUtils.class, repositoryName, beanParm)
                 .returns(beanClass)
                 .build();
 
@@ -271,7 +300,7 @@ public class JavaCreate implements CreateCode {
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(String.class, "id")
-                .addStatement("return " + repositoryName + ".findById(id ).get()")
+                .addStatement("  return " + repositoryName + ".findById(id ).get()")
                 .returns(beanClass)
                 .build();
 
@@ -279,19 +308,23 @@ public class JavaCreate implements CreateCode {
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(String.class, "ids")
-                .addCode("$T idArr = ids.split(\",\");\n" +
-                        "    " + repositoryName + ".batchDelete($T.asList(idArr));\n" +
-                        "return true;\n", String[].class, Arrays.class)
+                .addCode("  $T idArr = ids.split(\",\");\n" +
+                        "  " + repositoryName + ".batchDelete($T.asList(idArr));\n" +
+                        "  return true;\n", String[].class, Arrays.class)
                 .returns(TypeName.BOOLEAN)
                 .build();
 
-        MethodSpec addWhereMethod = MethodSpec.methodBuilder("addWhere")
+        MethodSpec toPredicateMethod = MethodSpec.methodBuilder("toPredicate")
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(beanClass, codeModel.getBeanName().toLowerCase())
-                .addParameter(List.class, "pamrms")
-                .addCode("StringBuffer hql = new StringBuffer();\n" +
-                        "return hql.toString();\n", StringBuffer.class)
-                .returns(String.class)
+                .addCode(" return ($T<" + codeModel.getBeanName() + ">) (root, criteriaQuery, criteriaBuilder) -> {\n" +
+                        "     $T<$T> predicate = new $T<>();\n" +
+                        "     if ($T.isNotBlank(" + StringUtil.firstLetterLowerCase(codeModel.getBeanName()) + ".getId())) {\n" +
+                        "         predicate.add(criteriaBuilder.equal(root.get(\"id\"), " + StringUtil.firstLetterLowerCase(codeModel.getBeanName()) + ".getId()));\n" +
+                        "     }\n" +
+                        "     return criteriaQuery.where(predicate.toArray(new Predicate[predicate.size()])).getRestriction();\n" +
+                        " };\n", Specification.class, List.class, Predicate.class, ArrayList.class, org.apache.commons.lang3.StringUtils.class)
+                .returns(Specification.class)
                 .build();
 
         MethodSpec pageListMethod = MethodSpec.methodBuilder("pageList")
@@ -300,13 +333,11 @@ public class JavaCreate implements CreateCode {
                 .addParameter(beanClass, codeModel.getBeanName().toLowerCase())
                 .addParameter(int.class, "page")
                 .addParameter(int.class, "pageSize")
-                .addCode("$T result = new $T();\n" +
-                        "$T pamrms = new $T();\n" +
-                        "String appendHql = addWhere(" + codeModel.getBeanName().toLowerCase() + ", pamrms);\n" +
-                        "result.put(\"result\",  " + repositoryName + ".listPageHql(\"from " + codeModel.getBeanName() + " where 1=1\" + appendHql, page, pageSize, pamrms));\n" +
-                        "result.put(\"count\",  " + repositoryName + ".countHql(\"select count(*) from " + codeModel.getBeanName() + " where 1=1\" + appendHql, pamrms));\n" +
-                        "return result;\n", JSONObject.class, JSONObject.class, List.class, ArrayList.class)
-                .returns(JSONObject.class)
+                .addCode("  $T sort = Sort.by(Sort.Direction.DESC, \"id\");\n" +
+                                "  $T pageable = $T.of(page, pageSize, sort);\n" +
+                                "  return " + repositoryName + ".findAll(toPredicate(" + codeModel.getBeanName().toLowerCase() + "), pageable);\n",
+                        Sort.class, Pageable.class, PageRequest.class)
+                .returns(Page.class)
                 .build();
 
         TypeSpec typeSpec = TypeSpec.classBuilder(codeModel.getServerImplName())
@@ -318,7 +349,7 @@ public class JavaCreate implements CreateCode {
                 .addMethod(saveMethod)
                 .addMethod(getMethod)
                 .addMethod(deleteMethod)
-                .addMethod(addWhereMethod)
+                .addMethod(toPredicateMethod)
                 .addMethod(pageListMethod)
                 .build();
 
@@ -348,6 +379,11 @@ public class JavaCreate implements CreateCode {
         AnnotationSpec infoAnnotation = AnnotationSpec
                 .builder(PostMapping.class)
                 .addMember("value", "$S", "/" + domainName + "/info/{id}")
+                .build();
+
+        AnnotationSpec pageListAnnotation = AnnotationSpec
+                .builder(PostMapping.class)
+                .addMember("value", "$S", "/" + domainName + "/pageList")
                 .build();
 
         FieldSpec fieldSpec = FieldSpec.builder(serverClassName, serverName, Modifier.PUBLIC)
@@ -382,6 +418,16 @@ public class JavaCreate implements CreateCode {
                 .returns(saveReturnClass)
                 .build();
 
+        MethodSpec pageListMethod = MethodSpec.methodBuilder("pageListMethod")
+                .addAnnotation(pageListAnnotation)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(domainClassName, domainName)
+                .addParameter(int.class, "page")
+                .addParameter(int.class, "pageSize")
+                .addCode("return " + serverName + ".pageList(" + domainName + ", page, pageSize);\n")
+                .returns(Page.class)
+                .build();
+
         TypeSpec className = TypeSpec.classBuilder(codeModel.getControllerName())
                 .addModifiers(Modifier.PUBLIC)
                 .addJavadoc("@Author:LiuBingXu\n@Date: " + DateUtils.formateDate("yyyy/MM/dd") + "\n")
@@ -390,6 +436,7 @@ public class JavaCreate implements CreateCode {
                 .addMethod(saveMethod)
                 .addMethod(deleteMethod)
                 .addMethod(infoMethod)
+                .addMethod(pageListMethod)
                 .build();
 
         JavaFile javaFile = JavaFile.builder(controllerPackage, className).build();
