@@ -144,13 +144,6 @@ public class JavaCreate implements CreateCode {
         }
     }
 
-    /**
-     * 生成domain
-     *
-     * @param tableName
-     * @param tableList
-     * @return
-     */
     public boolean createDomainClass(String tableName, List<Table> tableList) {
         /** 读取mysql转Java类型配置 **/
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("mysqlToJava.properties");
@@ -216,9 +209,6 @@ public class JavaCreate implements CreateCode {
         return true;
     }
 
-    /**
-     * 生成repository
-     */
     private void createRepository() {
         ClassName superClass = ClassName.bestGuess("jpa.repository.BaseRepository");
 
@@ -238,11 +228,6 @@ public class JavaCreate implements CreateCode {
         LOGGER.info("repository create success！");
     }
 
-    /**
-     * 生成service
-     *
-     * @return
-     */
     public boolean createServiceClass() {
         ClassName beanClass = ClassName.bestGuess(doMainPackage + "." + codeModel.getBeanName());
 
@@ -456,9 +441,6 @@ public class JavaCreate implements CreateCode {
         outFile(javaFile);
     }
 
-    /**
-     * @param javaFile
-     */
     private void outFile(JavaFile javaFile) {
         try {
             File file = new File((basePath + File.separator + "src" + File.separator + "main" + File.separator + "java"));
@@ -469,9 +451,6 @@ public class JavaCreate implements CreateCode {
         }
     }
 
-    /**
-     * @return
-     */
     private String getSql() {
         return "select COLUMN_NAME as name,column_comment as comment, data_type as dataType, if(column_key='PRI','true','false') from INFORMATION_SCHEMA.Columns\n" +
                 " where table_name='" + tableName + "' and table_schema= '" + dataBaseName + "'";

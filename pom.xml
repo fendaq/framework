@@ -34,7 +34,7 @@
     <groupId>com.github.liubingxu18</groupId>
     <artifactId>spring-data-jpawapper</artifactId>
     <description>封装spring data jpa支持hql、sql查询，代码生成功能</description>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
