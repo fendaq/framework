@@ -1,11 +1,13 @@
 # framework
 ## spring-data-jpawapper是什么?
-一个封装了jpa操作的工具集
+一个封装了jpa操作的工具集，且支持bean, repository, server, serverImpl, controller生成
 
 ## 有哪些功能？
 
 * crud
     *  方便使用hibernate hql sql语句,支持参数传递
+* 代码生成
+    *  根据表生成代码
 
 ## 怎么使用？
 
@@ -51,3 +53,5 @@ code-create:
     @ComponentScan(basePackages = {"jpa.autocode"})  
     @EnableJpaRepositories(repositoryFactoryBeanClass = BaseRepositoryFactoryBean.class)
 ```
+* 代码生成
+    访问localhost:8080/code.html
