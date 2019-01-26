@@ -1,4 +1,5 @@
 # framework
+[GitHub地址](https://github.com/LiuBingXu18/framework) [maven地址](https://mvnrepository.com/artifact/com.github.liubingxu18/spring-data-jpawapper)
 ## spring-data-jpawapper是什么?
 一个封装了jpa操作的工具集，且支持bean, repository, server, serverImpl, controller生成
 
@@ -17,7 +18,7 @@
     <dependency>
     	<groupId>com.github.liubingxu18</groupId>
 	<artifactId>spring-data-jpawapper</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.6</version>
     </dependency>
 ```
 
