@@ -1,5 +1,7 @@
 package jpa.autocode.controller;
 
+import com.alibaba.fastjson.JSON;
+import jpa.autocode.bean.Parms;
 import jpa.autocode.core.CreateCode;
 import jpa.autocode.core.JavaCreate;
 import org.apache.commons.lang3.StringUtils;
@@ -7,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @RestController
 public class CodeController {
@@ -34,10 +38,11 @@ public class CodeController {
     private String dataTableName;
 
     @PostMapping(value = "/code/create")
-    public ResponseEntity createCode(String table) {
-        CreateCode createCode = new JavaCreate(entityManager, dataBaseName, table
+    public ResponseEntity createCode(String parmsList) {
+        List<Parms> parmss = JSON.parseArray(parmsList, Parms.class);
+        CreateCode createCode = new JavaCreate(entityManager, dataBaseName, dataTableName
                 , doMainPackage, servicePackage, serviceImplPackag, repositoryPackage, controllerPackage);
-        if (StringUtils.isEmpty(table)) {
+        if (StringUtils.isEmpty(dataTableName)) {
             return ResponseEntity.ok("请输入表名，类似这样的dev_?");
         }
         if (!"true".equals(enable)) {
@@ -60,4 +65,6 @@ public class CodeController {
         return ResponseEntity.ok(entityManager.createNativeQuery(sql)
                 .setParameter(1, dataTableName).getResultList());
     }
+
+
 }
