@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>代码生成</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body style="text-align: center;padding-top: 200px;">
+        <span>表：<select id="table">
+                    <option>请选择表</option>
+                 </select>
+        </span>
+        <span><button id='create_btn' onclick="initMainObj.createCode()">生成</button></span>
+<style>
+    .layui-btn-group .layui-btn {
+        margin-right: 5px !important;
+    }
+</style>
+<script src="jquery-3.3.1.min.js"></script>
+<script>
+    var initMainObj = {
+        loadTable: function () {
+            // 加载数据库表
+            $.post("loadtable",{},function(data){
+                for (var i in data) {
+                    $("#table").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+                }
+            });
+        },
+        createCode: function () {
+            var table = $("#table").val();
+            if (table == '请选择表') {
+                alert('请选择表');
+                return false;
+            }
+            $("#create_btn").attr('disabled','disabled');
+            $.post("code/create",{'table': table},function(data){
+                alert(data);
+                $("#create_btn").attr('disabled', false);
+            });
+        }
+    };
+    initMainObj.loadTable();
+</script>
+</body>
+</html>

@@ -13,7 +13,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
 
 code-create:
-  database-name: tookit
+  database-name: toolkit
   bean-package: com.liubx.bean
   service-package: com.liubx.web
   service-impl-package: com.liubx.web.server.impl

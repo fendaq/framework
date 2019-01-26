@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
@@ -30,8 +30,10 @@ public class CodeController {
     private String controllerPackage;
     @Value("${code-create.enable}")
     private String enable;
+    @Value("${code-create.database-name}")
+    private String dataTableName;
 
-    @GetMapping(value = "/code/create")
+    @PostMapping(value = "/code/create")
     public ResponseEntity createCode(String table) {
         CreateCode createCode = new JavaCreate(entityManager, dataBaseName, table
                 , doMainPackage, servicePackage, serviceImplPackag, repositoryPackage, controllerPackage);
@@ -49,4 +51,13 @@ public class CodeController {
         return ResponseEntity.ok("代码生成成功！");
     }
 
+    @PostMapping(value = "/loadtable")
+    public ResponseEntity loadtable() {
+        if (!"true".equals(enable)) {
+            return ResponseEntity.ok("未启用代码生成");
+        }
+        String sql = "select table_name from information_schema.tables where table_schema=? and table_type='base table'";
+        return ResponseEntity.ok(entityManager.createNativeQuery(sql)
+                .setParameter(1, dataTableName).getResultList());
+    }
 }
