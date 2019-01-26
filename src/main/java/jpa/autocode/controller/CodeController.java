@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import jpa.autocode.bean.Parms;
 import jpa.autocode.core.CreateCode;
 import jpa.autocode.core.JavaCreate;
+import jpa.autocode.util.ParmsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,12 +40,12 @@ public class CodeController {
 
     @PostMapping(value = "/code/create")
     public ResponseEntity createCode(String parmsList) {
-        List<Parms> parmss = JSON.parseArray(parmsList, Parms.class);
-        CreateCode createCode = new JavaCreate(entityManager, dataBaseName, dataTableName
-                , doMainPackage, servicePackage, serviceImplPackag, repositoryPackage, controllerPackage);
-        if (StringUtils.isEmpty(dataTableName)) {
-            return ResponseEntity.ok("请输入表名，类似这样的dev_?");
+        List<Parms> parm = JSON.parseArray(parmsList, Parms.class);
+        if (ParmsUtil.getValueByKey(parm, "table").size() == 0 || ParmsUtil.getValueByKey(parm, "table").isEmpty()) {
+            return ResponseEntity.ok("请选择表名，类似这样的dev_?");
         }
+        CreateCode createCode = new JavaCreate(entityManager, dataBaseName, ParmsUtil.getValueByKey(parm, "table").get(0)
+                , doMainPackage, servicePackage, serviceImplPackag, repositoryPackage, controllerPackage, parm);
         if (!"true".equals(enable)) {
             return ResponseEntity.ok("未启用代码生成");
         }

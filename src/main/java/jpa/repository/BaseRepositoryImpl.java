@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -45,6 +46,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> listPageHql(String hql, int page, int size, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query query = entityManager.createQuery(hql);
         for (Object parm : params) {
             query.setParameter(params.indexOf(parm) + 1, parm);
@@ -70,6 +72,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> listPageSql(String sql, int page, int size, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query query = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
@@ -82,6 +85,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> listPageSql(String sql, int page, int size, Object[] params) {
+        Assert.notNull(params, "参数不能为NULL");
         return this.listPageSql(sql, page, size, Arrays.asList(params));
     }
 
@@ -92,6 +96,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public T findSql(String sql, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -102,6 +107,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> findListSql(String sql, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -112,6 +118,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> findListSql(String sql, Object[] params) {
+        Assert.notNull(params, "参数不能为NULL");
         return this.findListSql(sql, Arrays.asList(params));
     }
 
@@ -122,6 +129,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<Object[]> getListSql(String sql, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -151,6 +159,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Transactional
     @Modifying
     public int executeUpdateSql(String sql, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
@@ -177,6 +186,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Transactional
     @Modifying
     public int executeUpdateHql(String hql, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
@@ -209,6 +219,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public Long countHql(String hql, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
@@ -229,6 +240,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public Long countSql(String sql, List<Object> params) {
+        Assert.notNull(params, "参数不能为NULL");
         Query query = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);

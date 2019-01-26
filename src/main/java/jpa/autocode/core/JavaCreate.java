@@ -2,8 +2,10 @@ package jpa.autocode.core;
 
 import com.squareup.javapoet.*;
 import jpa.autocode.bean.CodeModel;
+import jpa.autocode.bean.Parms;
 import jpa.autocode.bean.Table;
 import jpa.autocode.util.DateUtils;
+import jpa.autocode.util.ParmsUtil;
 import jpa.autocode.util.StringUtil;
 import jpa.autocode.util.UUIDUtils;
 import lombok.Data;
@@ -51,9 +53,11 @@ public class JavaCreate implements CreateCode {
     protected String repositoryPackage = "com.liubx.web.repository";// repository类路径
     protected String controllerPackage = "com.liubx.web.controller";// controller类路径
     protected String basePath;// 绝对路径前缀
+    protected List<Parms> parm;// 参数
+    protected List<String> createInstance;// 创建实例
 
     public JavaCreate(EntityManager entityManager, String dataBaseName, String tableName, String doMainPackage,
-                      String servicePackage, String serviceImplPackage, String repositoryPackage, String controllerPackage) {
+                      String servicePackage, String serviceImplPackage, String repositoryPackage, String controllerPackage, List<Parms> parm) {
         Assert.notNull(dataBaseName, "数据库名不能为空！");
         Assert.notNull(tableName, "表不能为空！");
         Assert.notNull(doMainPackage, "实体类路径不能为空！");
@@ -69,6 +73,8 @@ public class JavaCreate implements CreateCode {
         this.serviceImplPackage = serviceImplPackage;
         this.repositoryPackage = repositoryPackage;
         this.controllerPackage = controllerPackage;
+        this.parm = parm;
+        this.createInstance = ParmsUtil.getValueByKey(this.parm, "type_c");
         this.initBasePath();
     }
 
@@ -94,7 +100,7 @@ public class JavaCreate implements CreateCode {
             table.setIsPri(StringUtil.objToStr(t[3]));
             tableList.add(table);
         });
-        System.out.println(tableList);
+
         // 准备相关名
         codeModel.setBeanName(StringUtil.firstLetterUppercase(tableName.split("_")[1]));
         codeModel.setRepositoryName(codeModel.getBeanName() + "Repository");
@@ -113,22 +119,29 @@ public class JavaCreate implements CreateCode {
     void newThreadCreateCode(String tableName, List<Table> tableList) throws InterruptedException {
         // 生成domain
         this.createDomainClass(tableName, tableList);
-
         Thread.sleep(1000);
-        // 生成repository
-        this.createRepository();
 
-        Thread.sleep(1000);
-        // 生成service接口
-        this.createServiceClass();
+        if (createInstance.contains("repository")) {
+            // 生成repository
+            this.createRepository();
+            Thread.sleep(1000);
+        }
 
-        Thread.sleep(1000);
-        // 生成service接口实现类
-        this.createServiceClassImpl();
+        if (createInstance.contains("server")) {
+            // 生成service接口
+            this.createServiceClass();
+            Thread.sleep(1000);
+        }
 
-        Thread.sleep(1000);
-        // 生成controller
-        this.createController();
+        if (createInstance.contains("serverImpl")) {
+            // 生成service接口实现类
+            this.createServiceClassImpl();
+            Thread.sleep(1000);
+        }
+        if (createInstance.contains("controller")) {
+            // 生成controller
+            this.createController();
+        }
     }
 
     /**
