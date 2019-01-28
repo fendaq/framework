@@ -334,7 +334,7 @@ public class JavaCreate implements CreateCode {
                 .addParameter(int.class, "pageSize")
                 .addCode("  $T sort = Sort.by(Sort.Direction.DESC, \"id\");\n" +
                                 "  $T pageable = $T.of(page, pageSize, sort);\n" +
-                                "  return " + repositoryName + ".findAll(toPredicate(" + codeModel.getBeanName().toLowerCase() + "), pageable);\n",
+                                "  return " + repositoryName + ".pageList(pageable, toPredicate(" + codeModel.getBeanName().toLowerCase() + "));\n",
                         Sort.class, Pageable.class, PageRequest.class)
                 .returns(Page.class)
                 .build();

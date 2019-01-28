@@ -64,6 +64,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> listPageHql(String hql, int page, int size, Object[] params) {
+        Assert.notNull(params, "params can't null");
         return this.listPageHql(hql, page, size, Arrays.asList(params));
     }
 
@@ -95,8 +96,9 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
-    public T findSql(String sql, Object[] obj) {
-        return this.findSql(sql, Arrays.asList(obj));
+    public T findSql(String sql, Object[] params) {
+        Assert.notNull(params, "params can't null");
+        return this.findSql(sql, Arrays.asList(params));
     }
 
     @Override
@@ -146,6 +148,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<Object[]> getListSql(String sql, Object[] params) {
+        Assert.notNull(params, "params can't null");
         return this.getListSql(sql, Arrays.asList(params));
     }
 
@@ -194,6 +197,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Transactional
     @Modifying
     public int executeUpdateSql(String sql, Object[] params) {
+        Assert.notNull(params, "params can't null");
         return this.executeUpdateSql(sql, Arrays.asList(params));
     }
 
@@ -221,6 +225,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Transactional
     @Modifying
     public int executeUpdateHql(String hql, Object[] params) {
+        Assert.notNull(params, "params can't null");
         return this.executeUpdateHql(hql, Arrays.asList(params));
     }
 
@@ -252,6 +257,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public Long countHql(String hql, Object[] params) {
+        Assert.notNull(params, "params can't null");
         return this.countHql(hql, Arrays.asList(params));
     }
 
@@ -273,7 +279,52 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public Long countSql(String sql, Object[] params) {
+        Assert.notNull(params, "params can't null");
         return this.countSql(sql, Arrays.asList(params));
+    }
+
+    @Override
+    public Object findObjSql(String sql) {
+        return entityManager.createNativeQuery(sql).getSingleResult();
+    }
+
+    @Override
+    public Object findObjSql(String sql, List<Object> params) {
+        Assert.notNull(params, "params can't null");
+        Query nativeQuery = entityManager.createNativeQuery(sql);
+        params.forEach(parm -> {
+            nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+        });
+        return nativeQuery.getSingleResult();
+    }
+
+    @Override
+    public Object findObjSql(String sql, Object[] params) {
+        Assert.notNull(params, "params can't null");
+        return this.findObjSql(sql, Arrays.asList(params));
+    }
+
+    @Override
+    public Object findObjHql(String hql) {
+        return entityManager.createQuery(hql).getSingleResult();
+    }
+
+    @Override
+    public Object findObjHql(String hql, List<Object> params) {
+        Assert.notNull(params, "params can't null");
+        Query query = entityManager.createQuery(hql);
+        params.forEach(parm -> {
+            query.setParameter(params.indexOf(parm) + 1, parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+        });
+        return query.getSingleResult();
+    }
+
+    @Override
+    public Object findObjHql(String hql, Object[] params) {
+        Assert.notNull(params, "params can't null");
+        return this.findObjHql(hql, Arrays.asList(params));
     }
 
     @Override
