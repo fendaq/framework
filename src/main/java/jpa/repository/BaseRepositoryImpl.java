@@ -37,6 +37,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     }
 
     @Override
+    public List<T> listSql(String sql) {
+        return entityManager.createNativeQuery(sql).getResultList();
+    }
+
+    @Override
     public List<T> listPageHql(String hql, int page, int size) {
         return entityManager.createQuery(hql)
                 .setFirstResult(page)
@@ -46,11 +51,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> listPageHql(String hql, int page, int size, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query query = entityManager.createQuery(hql);
         for (Object parm : params) {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         }
         return query.setFirstResult(page)
                 .setMaxResults(size)
@@ -72,11 +77,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> listPageSql(String sql, int page, int size, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query query = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return query.setFirstResult(page)
                 .setMaxResults(size)
@@ -85,7 +90,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> listPageSql(String sql, int page, int size, Object[] params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         return this.listPageSql(sql, page, size, Arrays.asList(params));
     }
 
@@ -96,29 +101,46 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public T findSql(String sql, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return (T) nativeQuery.getSingleResult();
     }
 
     @Override
+    public T findHql(String hql, Object[] params) {
+        Assert.notNull(params, "params can't null");
+        return this.findHql(hql, Arrays.asList(params));
+    }
+
+    @Override
+    public T findHql(String hql, List<Object> params) {
+        Assert.notNull(params, "params can't null");
+        Query query = entityManager.createQuery(hql);
+        params.forEach(parm -> {
+            query.setParameter(params.indexOf(parm) + 1, parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+        });
+        return (T) query.getSingleResult();
+    }
+
+    @Override
     public List<T> findListSql(String sql, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return nativeQuery.getResultList();
     }
 
     @Override
     public List<T> findListSql(String sql, Object[] params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         return this.findListSql(sql, Arrays.asList(params));
     }
 
@@ -129,11 +151,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<Object[]> getListSql(String sql, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return nativeQuery.getResultList();
     }
@@ -159,11 +181,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Transactional
     @Modifying
     public int executeUpdateSql(String sql, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return nativeQuery.executeUpdate();
     }
@@ -186,11 +208,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Transactional
     @Modifying
     public int executeUpdateHql(String hql, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return query.executeUpdate();
     }
@@ -219,11 +241,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public Long countHql(String hql, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return Long.parseLong(query.getSingleResult().toString());
     }
@@ -240,11 +262,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public Long countSql(String sql, List<Object> params) {
-        Assert.notNull(params, "参数不能为NULL");
+        Assert.notNull(params, "params can't null");
         Query query = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding parms index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
         });
         return Long.parseLong(query.getSingleResult().toString());
     }

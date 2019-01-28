@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -342,6 +343,7 @@ public class JavaCreate implements CreateCode {
                 .addModifiers(Modifier.PUBLIC)
                 .addJavadoc("@Author:LiuBingXu\n@Date: " + DateUtils.formateDate("yyyy/MM/dd") + "\n")
                 .addAnnotation(Service.class)
+                .addAnnotation(Transactional.class)
                 .addSuperinterface(className)
                 .addField(fieldSpec)
                 .addMethod(saveMethod)
