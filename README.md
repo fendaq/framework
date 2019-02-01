@@ -45,20 +45,22 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
 code-create: 
-  #代码生成的数据库表 
-  database-name: toolkit  
-  #代码生成的bean包 
-  bean-package: com.liubx.bean
-  #代码生成的service包   
-  service-package: com.liubx.web
-  #代码生成的service实现类包     
-  service-impl-package: com.liubx.web.server.impl
-  #代码生成的repository包  
-  repository-package: com.liubx.web.repository
-  #代码生成的controller包  
-  controller-package: com.liubx.web.controller  
-  #是否启用代码生成
-  enable: true
+ #需要生成代码的数据库
+   database-name: toolkit
+ #生成bean的包
+   bean-package: com.liubx.bean
+ #生成service的包
+   service-package: com.liubx.web.service
+ #生成serviceImpl的包
+   service-impl-package: com.liubx.web.service.impl
+ #生成repository的包
+   repository-package: com.liubx.web.repoDsitory
+ #生成controller的包
+   controller-package: com.liubx.web.controller
+ #是否生成代码
+   enable: true
+ #数据库类型 mysql或者oracle
+   database-type: mysql
 ```
 * 主函数引入注解
 
