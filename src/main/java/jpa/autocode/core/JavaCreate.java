@@ -49,16 +49,18 @@ public class JavaCreate implements CreateCode {
     protected String tableName;// 表名
     protected String version = "V 1.0.5";// 版本
     protected String doMainPackage = "com.liubx.bean";// 实体类路径
-    protected String servicePackage = "com.liubx.web.server";// service路径
-    protected String serviceImplPackage = "com.liubx.web.server.impl";// service实现类路径
+    protected String servicePackage = "com.liubx.web.service";// service路径
+    protected String serviceImplPackage = "com.liubx.web.service.impl";// service实现类路径
     protected String repositoryPackage = "com.liubx.web.repository";// repository类路径
     protected String controllerPackage = "com.liubx.web.controller";// controller类路径
+    protected String dataBaseType;// 数据库类型
     protected String basePath;// 绝对路径前缀
     protected List<Parms> parm;// 参数
     protected List<String> createInstance;// 创建实例
 
     public JavaCreate(EntityManager entityManager, String dataBaseName, String tableName, String doMainPackage,
-                      String servicePackage, String serviceImplPackage, String repositoryPackage, String controllerPackage, List<Parms> parm) {
+                      String servicePackage, String serviceImplPackage, String repositoryPackage, String controllerPackage,
+                      String dataBaseType, List<Parms> parm) {
         Assert.notNull(dataBaseName, "数据库名不能为空！");
         Assert.notNull(tableName, "表不能为空！");
         Assert.notNull(doMainPackage, "实体类路径不能为空！");
@@ -66,6 +68,7 @@ public class JavaCreate implements CreateCode {
         Assert.notNull(serviceImplPackage, "service 实现类路径不能为空！");
         Assert.notNull(repositoryPackage, "repository 包路径不能为空！");
         Assert.notNull(controllerPackage, "controller 包路径不能为空！");
+        Assert.notNull(dataBaseType, "数据库类型不能为空！");
         this.entityManager = entityManager;
         this.dataBaseName = dataBaseName;
         this.tableName = tableName;
@@ -74,6 +77,7 @@ public class JavaCreate implements CreateCode {
         this.serviceImplPackage = serviceImplPackage;
         this.repositoryPackage = repositoryPackage;
         this.controllerPackage = controllerPackage;
+        this.dataBaseType = dataBaseType;
         this.parm = parm;
         this.createInstance = ParmsUtil.getValueByKey(this.parm, "type_c");
         this.initBasePath();
@@ -454,8 +458,33 @@ public class JavaCreate implements CreateCode {
     }
 
     private String getSql() {
-        return "select COLUMN_NAME as name,column_comment as comment, data_type as dataType, if(column_key='PRI','true','false') from INFORMATION_SCHEMA.Columns\n" +
-                " where table_name='" + tableName + "' and table_schema= '" + dataBaseName + "'";
+        StringBuffer sb = new StringBuffer();
+        if ("mysql".equals(dataBaseType)) {
+            sb.append("select COLUMN_NAME as name,column_comment as comment, data_type as dataType, if(column_key='PRI','true','false') from INFORMATION_SCHEMA.Columns\n" +
+                    " where table_name='" + tableName + "' and table_schema= '" + dataBaseName + "'");
+        } else if ("oracle".equals(dataBaseType)) {
+            sb.append("select\n" +
+                    "  utc.column_name as 字段名,utc.data_default 默认值,ucc.comments 注释,utc.data_type 数据类型,\n" +
+                    "  CASE utc.nullable WHEN 'N' THEN '否' ELSE '是' END 可空,\n" +
+                    "  UTC.table_name 表名,\n" +
+                    "  CASE UTC.COLUMN_NAME\n" +
+                    "  WHEN (select\n" +
+                    "          col.column_name\n" +
+                    "        from\n" +
+                    "          user_constraints con,user_cons_columns col\n" +
+                    "        where\n" +
+                    "          con.constraint_name=col.constraint_name and con.constraint_type='P'\n" +
+                    "          and col.table_name='BAS_EVENT')   THEN 'true' ELSE 'false' END AS 主键,utc.data_length 最大长度\n" +
+                    "from\n" +
+                    "  user_tab_columns utc,user_col_comments ucc\n" +
+                    "where\n" +
+                    "  utc.table_name = ucc.table_name\n" +
+                    "  and utc.column_name = ucc.column_name\n" +
+                    "  and utc.table_name = '" + tableName + "'\n" +
+                    "order by\n" +
+                    "  column_id;");
+        }
+        return sb.toString();
     }
 
     private void initBasePath() {

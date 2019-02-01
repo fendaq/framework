@@ -37,6 +37,8 @@ public class CodeController {
     private String enable;
     @Value("${code-create.database-name}")
     private String dataTableName;
+    @Value("${code-create.database-type}")
+    private String dataBaseType;
 
     @PostMapping(value = "/code/create")
     public ResponseEntity createCode(String parmsList) {
@@ -45,7 +47,7 @@ public class CodeController {
             return ResponseEntity.ok("请选择表名，类似这样的dev_?");
         }
         CreateCode createCode = new JavaCreate(entityManager, dataBaseName, ParmsUtil.getValueByKey(parm, "table").get(0)
-                , doMainPackage, servicePackage, serviceImplPackag, repositoryPackage, controllerPackage, parm);
+                , doMainPackage, servicePackage, serviceImplPackag, repositoryPackage, controllerPackage, dataBaseType, parm);
         if (!"true".equals(enable)) {
             return ResponseEntity.ok("未启用代码生成");
         }
@@ -62,8 +64,13 @@ public class CodeController {
         if (!"true".equals(enable)) {
             return ResponseEntity.ok("未启用代码生成");
         }
-        String sql = "select table_name from information_schema.tables where table_schema=? and table_type='base table'";
-        return ResponseEntity.ok(entityManager.createNativeQuery(sql)
+        StringBuffer sb = new StringBuffer();
+        if ("mysql".equals(dataBaseType)) {
+            sb.append("select table_name from information_schema.tables where table_schema=? and table_type='base table'");
+        } else if ("oracle".equals(dataBaseType)) {
+            sb.append("select * from user_tab_comments");
+        }
+        return ResponseEntity.ok(entityManager.createNativeQuery(sb.toString())
                 .setParameter(1, dataTableName).getResultList());
     }
 

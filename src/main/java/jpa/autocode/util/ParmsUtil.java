@@ -1,7 +1,6 @@
 package jpa.autocode.util;
 
 import jpa.autocode.bean.Parms;
-
 import java.util.ArrayList;
 import java.util.List;
 
