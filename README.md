@@ -15,10 +15,16 @@
 * spring boot 引入
 
 ```xml
+    <parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.1.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
     <dependency>
     	<groupId>com.github.liubingxu18</groupId>
-	<artifactId>spring-data-jpawapper</artifactId>
-	<version>1.0.6</version>
+		<artifactId>spring-data-jpawapper</artifactId>
+		<version>1.0.7</version>
     </dependency>
 ```
 
@@ -38,12 +44,18 @@ spring:
     password: pwd
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-code-create:  
+code-create: 
+  #代码生成的数据库表 
   database-name: toolkit  
-  bean-package: com.liubx.bean  
-  service-package: com.liubx.web  
-  service-impl-package: com.liubx.web.server.impl  
-  repository-package: com.liubx.web.repository  
+  #代码生成的bean包 
+  bean-package: com.liubx.bean
+  #代码生成的service包   
+  service-package: com.liubx.web
+  #代码生成的service实现类包     
+  service-impl-package: com.liubx.web.server.impl
+  #代码生成的repository包  
+  repository-package: com.liubx.web.repository
+  #代码生成的controller包  
   controller-package: com.liubx.web.controller  
   #是否启用代码生成
   enable: true
@@ -55,4 +67,5 @@ code-create:
     @EnableJpaRepositories(repositoryFactoryBeanClass = BaseRepositoryFactoryBean.class)
 ```
 * 代码生成
-    访问localhost:8080/code.html
+    访问localhost:8080/code.html  
+    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190201210506170.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI3NDc0ODUx,size_16,color_FFFFFF,t_70)
