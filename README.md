@@ -16,15 +16,15 @@
 
 ```xml
     <parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>2.1.1.RELEASE</version>
+	<relativePath/> <!-- lookup parent from repository -->
+    </parent>
     <dependency>
     	<groupId>com.github.liubingxu18</groupId>
-		<artifactId>spring-data-jpawapper</artifactId>
-		<version>1.0.7</version>
+	<artifactId>spring-data-jpawapper</artifactId>
+	<version>1.0.7</version>
     </dependency>
 ```
 
