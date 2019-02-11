@@ -55,7 +55,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query query = entityManager.createQuery(hql);
         for (Object parm : params) {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         }
         return query.setFirstResult(page)
                 .setMaxResults(size)
@@ -82,7 +82,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query query = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return query.setFirstResult(page)
                 .setMaxResults(size)
@@ -107,7 +107,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return (T) nativeQuery.getSingleResult();
     }
@@ -124,7 +124,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return (T) query.getSingleResult();
     }
@@ -135,7 +135,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return nativeQuery.getResultList();
     }
@@ -158,7 +158,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return nativeQuery.getResultList();
     }
@@ -188,7 +188,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return nativeQuery.executeUpdate();
     }
@@ -216,7 +216,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return query.executeUpdate();
     }
@@ -250,7 +250,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return Long.parseLong(query.getSingleResult().toString());
     }
@@ -272,7 +272,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query query = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return Long.parseLong(query.getSingleResult().toString());
     }
@@ -294,7 +294,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query nativeQuery = entityManager.createNativeQuery(sql);
         params.forEach(parm -> {
             nativeQuery.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return nativeQuery.getSingleResult();
     }
@@ -316,7 +316,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
         Query query = entityManager.createQuery(hql);
         params.forEach(parm -> {
             query.setParameter(params.indexOf(parm) + 1, parm);
-            LOGGER.info("binding params index : " + params.indexOf(parm) + " value : " + parm);
+            LOGGER.info("binding params index : " + (params.indexOf(parm) + 1) + " value : " + parm);
         });
         return query.getSingleResult();
     }
