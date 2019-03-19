@@ -464,9 +464,7 @@ public class JavaCreate implements CreateCode {
                     " where table_name='" + tableName + "' and table_schema= '" + dataBaseName + "'");
         } else if ("oracle".equals(dataBaseType)) {
             sb.append("select\n" +
-                    "  utc.column_name as 字段名,utc.data_default 默认值,ucc.comments 注释,utc.data_type 数据类型,\n" +
-                    "  CASE utc.nullable WHEN 'N' THEN '否' ELSE '是' END 可空,\n" +
-                    "  UTC.table_name 表名,\n" +
+                    "  utc.column_name as 字段名,ucc.comments 注释,utc.data_type 数据类型,\n" +
                     "  CASE UTC.COLUMN_NAME\n" +
                     "  WHEN (select\n" +
                     "          col.column_name\n" +
@@ -474,7 +472,7 @@ public class JavaCreate implements CreateCode {
                     "          user_constraints con,user_cons_columns col\n" +
                     "        where\n" +
                     "          con.constraint_name=col.constraint_name and con.constraint_type='P'\n" +
-                    "          and col.table_name='BAS_EVENT')   THEN 'true' ELSE 'false' END AS 主键,utc.data_length 最大长度\n" +
+                    "          and col.table_name='BAS_EVENT')   THEN 'true' ELSE 'false' END AS 主键\n" +
                     "from\n" +
                     "  user_tab_columns utc,user_col_comments ucc\n" +
                     "where\n" +
