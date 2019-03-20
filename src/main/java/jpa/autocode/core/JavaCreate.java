@@ -128,27 +128,24 @@ public class JavaCreate implements CreateCode {
 
         if (createInstance.contains("repository")) {
             // 生成repository
-
+            this.createRepository();
+            Thread.sleep(1000);
         }
-        this.createRepository();
-        Thread.sleep(1000);
-        this.createServiceClass();
-        Thread.sleep(1000);
-        this.createServiceClassImpl();
-        Thread.sleep(1000);
-        this.createController();
+       
         if (createInstance.contains("server")) {
             // 生成service接口
-
+            this.createServiceClass();
+            Thread.sleep(1000);
         }
 
         if (createInstance.contains("serverImpl")) {
             // 生成service接口实现类
-
+            this.createServiceClassImpl();
+            Thread.sleep(1000);
         }
         if (createInstance.contains("controller")) {
             // 生成controller
-
+            this.createController();
         }
     }
 
