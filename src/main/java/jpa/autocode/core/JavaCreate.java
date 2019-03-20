@@ -128,30 +128,38 @@ public class JavaCreate implements CreateCode {
 
         if (createInstance.contains("repository")) {
             // 生成repository
-            this.createRepository();
-            Thread.sleep(1000);
-        }
 
+        }
+        this.createRepository();
+        Thread.sleep(1000);
+        this.createServiceClass();
+        Thread.sleep(1000);
+        this.createServiceClassImpl();
+        Thread.sleep(1000);
+        this.createController();
         if (createInstance.contains("server")) {
             // 生成service接口
-            this.createServiceClass();
-            Thread.sleep(1000);
+
         }
 
         if (createInstance.contains("serverImpl")) {
             // 生成service接口实现类
-            this.createServiceClassImpl();
-            Thread.sleep(1000);
+
         }
         if (createInstance.contains("controller")) {
             // 生成controller
-            this.createController();
+
         }
     }
 
     public boolean createDomainClass(String tableName, List<Table> tableList) {
         /** 读取mysql转Java类型配置 **/
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream("mysqlToJava.properties");
+        InputStream in = null;
+        if ("mysql".equals(dataBaseType)) {
+            in = this.getClass().getClassLoader().getResourceAsStream("mysqlToJava.properties");
+        } else {
+            in = this.getClass().getClassLoader().getResourceAsStream("oracleToJava.properties");
+        }
         ResourceBundle resourceBundle = null;
         try {
             resourceBundle = new PropertyResourceBundle(in);
@@ -164,7 +172,7 @@ public class JavaCreate implements CreateCode {
         tableList.forEach(t -> {
             /** 属性上面的注解 **/
             AnnotationSpec annotationSpecColumn = AnnotationSpec.builder(Column.class)
-                    .addMember("name", "$S", t.getName())
+                    .addMember("name", "$S", t.getName().toLowerCase())
                     .build();
             /** 主键 **/
             if (t.getIsPri().equals("true")) {
@@ -174,7 +182,9 @@ public class JavaCreate implements CreateCode {
             Class clazz = String.class;
             if (finalResourceBundle != null) {
                 try {
-                    clazz = Class.forName(finalResourceBundle.getString(t.getDataType()));
+                    String dataType = t.getDataType().toLowerCase();
+                    dataType = dataType.lastIndexOf("(") != -1 ? dataType.substring(0, dataType.lastIndexOf("(")) : dataType;
+                    clazz = Class.forName(finalResourceBundle.getString(dataType));
                     if (clazz == Date.class) {
                         // 处理日期格式化
                     }
@@ -183,8 +193,8 @@ public class JavaCreate implements CreateCode {
                 }
             }
             /** 添加属性 **/
-            FieldSpec fieldSpec = FieldSpec.builder(clazz, t.getName(), Modifier.PRIVATE)
-                    .addJavadoc(t.getComment())
+            FieldSpec fieldSpec = FieldSpec.builder(clazz, t.getName().toLowerCase(), Modifier.PRIVATE)
+                    .addJavadoc(t.getComment())// 字段注释
                     .addAnnotation(annotationSpecColumn)
                     .build();
             builder.addField(fieldSpec);
@@ -463,24 +473,24 @@ public class JavaCreate implements CreateCode {
             sb.append("select COLUMN_NAME as name,column_comment as comment, data_type as dataType, if(column_key='PRI','true','false') from INFORMATION_SCHEMA.Columns\n" +
                     " where table_name='" + tableName + "' and table_schema= '" + dataBaseName + "'");
         } else if ("oracle".equals(dataBaseType)) {
-            sb.append("select\n" +
-                    "  utc.column_name as 字段名,ucc.comments 注释,utc.data_type 数据类型,\n" +
-                    "  CASE UTC.COLUMN_NAME\n" +
-                    "  WHEN (select\n" +
-                    "          col.column_name\n" +
-                    "        from\n" +
-                    "          user_constraints con,user_cons_columns col\n" +
-                    "        where\n" +
-                    "          con.constraint_name=col.constraint_name and con.constraint_type='P'\n" +
-                    "          and col.table_name='BAS_EVENT')   THEN 'true' ELSE 'false' END AS 主键\n" +
-                    "from\n" +
-                    "  user_tab_columns utc,user_col_comments ucc\n" +
-                    "where\n" +
-                    "  utc.table_name = ucc.table_name\n" +
-                    "  and utc.column_name = ucc.column_name\n" +
-                    "  and utc.table_name = '" + tableName + "'\n" +
-                    "order by\n" +
-                    "  column_id;");
+            sb.append("select utc.column_name as 字段名,\n" +
+                    "       ucc.comments 注释,\n" +
+                    "       utc.data_type 数据类型,\n" +
+                    "       CASE UTC.COLUMN_NAME\n" +
+                    "         WHEN (select col.column_name\n" +
+                    "             from user_constraints con, user_cons_columns col\n" +
+                    "            where con.constraint_name = col.constraint_name\n" +
+                    "              and con.constraint_type = 'P'\n" +
+                    "              and col.table_name = '"+ tableName.toUpperCase() +"') THEN\n" +
+                    "          'true'\n" +
+                    "         ELSE\n" +
+                    "          'false'\n" +
+                    "       END AS 主键    \n" +
+                    "  from user_tab_columns utc, user_col_comments ucc\n" +
+                    " where utc.table_name = ucc.table_name\n" +
+                    "   and utc.column_name = ucc.column_name\n" +
+                    "   and utc.table_name = '"+ tableName.toUpperCase() +"'\n" +
+                    " order by column_id");
         }
         return sb.toString();
     }
