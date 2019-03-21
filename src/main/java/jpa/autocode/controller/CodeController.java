@@ -67,11 +67,12 @@ public class CodeController {
         StringBuffer sb = new StringBuffer();
         if ("mysql".equals(dataBaseType)) {
             sb.append("select table_name from information_schema.tables where table_schema=? and table_type='base table'");
+            return ResponseEntity.ok(entityManager.createNativeQuery(sb.toString())
+                    .setParameter(1, dataTableName).getResultList());
         } else if ("oracle".equals(dataBaseType)) {
-            sb.append("select * from user_tab_comments");
+            sb.append("select table_name from user_tab_comments");
         }
-        return ResponseEntity.ok(entityManager.createNativeQuery(sb.toString())
-                .setParameter(1, dataTableName).getResultList());
+        return ResponseEntity.ok(entityManager.createNativeQuery(sb.toString()).getResultList());
     }
 
 
