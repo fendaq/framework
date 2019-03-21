@@ -31,7 +31,7 @@
             // 加载数据库表
             $.post("loadtable", {}, function (data) {
                 for (var i in data) {
-                    $("#table").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+                    $("#table").append("<option value='" + data[i].toLowerCase() + "'>" + data[i].toLowerCase() + "</option>");
                 }
             });
         },
@@ -46,7 +46,7 @@
                 alert('请选择表');
                 return false;
             }
-            if (table.indexOf("dev_") == -1) {
+            if (table.toLowerCase().indexOf("dev_") == -1) {
                 alert('请选择dev_开头的表！');
                 return false;
             }
