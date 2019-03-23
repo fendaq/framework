@@ -65,7 +65,7 @@ code-create:
 * 主函数引入注解
 
 ```xml
-    @ComponentScan(basePackages = {"jpa.autocode"})  
+    @ComponentScan(basePackages = {"jpa.autocode", "you code package"})  
     @EnableJpaRepositories(repositoryFactoryBeanClass = BaseRepositoryFactoryBean.class)
 ```
 * 代码生成
