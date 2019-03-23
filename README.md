@@ -24,7 +24,7 @@
     <dependency>
     	<groupId>com.github.liubingxu18</groupId>
 	<artifactId>spring-data-jpawapper</artifactId>
-	<version>1.0.7</version>
+	<version>1.0.8</version>
     </dependency>
 ```
 
